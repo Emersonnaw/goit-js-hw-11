@@ -2,7 +2,7 @@
 import './common/style.css'
 import  ImageServiceAPI from './components/imageService'
 import Notiflix from 'notiflix';
-const axios = require('axios').default;
+// const axios = require('axios').default;
 
 const imagesApi = new ImageServiceAPI(); //import Class
 let markupCards = '';
@@ -56,13 +56,13 @@ function handleSubmit(e){
     ); 
           return;
    }
-     
+showTotalHits(baseData);    
 galleryAbortContainer();
 imagesApi.makeGalleryCard(baseData.hits);
 markupCards = imagesApi.getReadyMarkup();
 refs.gallery.insertAdjacentHTML("beforeend", markupCards); // render cards
 addButtonLeadMore(); //show buttom More
- }).catch(error => console.log(error));
+ }).catch((error) => console.log(error));
  }
 
 refs.buttonLoadMore.addEventListener('click', onLoadMore);
@@ -77,7 +77,8 @@ function onLoadMore(e){
  markupCards = imagesApi.getReadyMarkup();
 refs.gallery.insertAdjacentHTML("beforeend", markupCards);
 allContentLoaded(baseData);
-}).catch(error => console.log(error));
+showTotalHits(baseData);
+}).catch((error) => console.error(error));
 }
 
 function galleryAbortContainer(){
@@ -105,3 +106,23 @@ function allContentLoaded(allHits){
   
   }
 }
+
+function showTotalHits(hits){
+  Notiflix.Notify.success(
+    `Hooray! We found ${hits.totalHits} images.`,
+    {
+      timeout: 6000,
+    },
+  );
+}
+
+
+// slow scroll
+// const { height: cardHeight } = document
+//   .querySelector(".gallery")
+//   .firstElementChild.getBoundingClientRect();
+
+// window.scrollBy({
+//   top: cardHeight * 2,
+//   behavior: "smooth",
+// });

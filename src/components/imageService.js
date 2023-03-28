@@ -1,3 +1,6 @@
+// import axios from "axios";
+
+
 export default class ImageServiceAPI {
   constructor() {
     this.search_query = '';
@@ -31,6 +34,13 @@ export default class ImageServiceAPI {
     const perPage ='&per_page=40';
     const page = `&page=${this.page}`;
  
+
+    
+    
+    // return axios.get(`${BASE_URL}?key=${key}&q=${this.search_query}${searchTypePhoto}${searchOrientation}${ageFilter}${perPage}${page}`)
+
+
+
  
    return fetch(
       `${BASE_URL}?key=${key}&q=${this.search_query}${searchTypePhoto}${searchOrientation}${ageFilter}${perPage}${page}`
