@@ -1,13 +1,9 @@
-// import axios from "axios";
-
-
+ import axios from "axios";
 export default class ImageServiceAPI {
   constructor() {
     this.search_query = '';
      this.page = 2; // increment number of page need to put om then(data)
-     this.markup ='';
-    
-
+     this.markup =''; 
   }
 
   get query() {
@@ -15,17 +11,22 @@ export default class ImageServiceAPI {
   }
 
   set query(newQuery) {
-    this.search_query = newQuery;
-    
+    this.search_query = newQuery; 
   }
+
   resetPage(){
      this.page = 1;
   }
+  
   incrementPage(){
     this.page += 1;
   }
+  
+  getReadyMarkup(){
+    return this.markup;
+   }
 
-  fetchImage() {
+ async fetchImage() {
     const BASE_URL = 'https://pixabay.com/api/';
     const key = '34586692-ed7cb8a238ccde585a263c879';
     const searchTypePhoto = '&image_type=photo';
@@ -34,28 +35,22 @@ export default class ImageServiceAPI {
     const perPage ='&per_page=40';
     const page = `&page=${this.page}`;
  
-
-    
-    
-    // return axios.get(`${BASE_URL}?key=${key}&q=${this.search_query}${searchTypePhoto}${searchOrientation}${ageFilter}${perPage}${page}`)
-
-
-
- 
-   return fetch(
-      `${BASE_URL}?key=${key}&q=${this.search_query}${searchTypePhoto}${searchOrientation}${ageFilter}${perPage}${page}`
-    )
-      .then(resp => resp.json())
-      .then(data => {
-          return data;
-      });
+   const object =  await axios.get(`${BASE_URL}?key=${key}&q=${this.search_query}${searchTypePhoto}${searchOrientation}${ageFilter}${perPage}${page}`);
+   return object.data;
   }
 
- 
+//  async publicReadyCards (){
+//  const fetchResolt = await this.fetchImage();
+//  return this.makeGalleryCard(fetchResolt);
+
+  
+// }
+
+
+
  makeGalleryCard(renderObject){
    // {webformatURL,largeImageURL ,tags, likes, views, comments, downloads}
    return this.markup = renderObject.map(({webformatURL, tags, likes, views, comments, downloads}) => {
-   
      return   `<div class="photo-card">  
      <div class="thumb">
      <img class="img__card" src="${webformatURL}" alt="${tags}" loading="lazy" />
@@ -80,15 +75,7 @@ export default class ImageServiceAPI {
         </div>
       </div>`
    }).join('');
- 
- 
   }
-
- 
-  getReadyMarkup(){
-   return this.markup;
-  }
-  
 
  }
 
