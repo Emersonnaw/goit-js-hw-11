@@ -116,8 +116,9 @@ async function showMoreCards(){
   imagesApi.makeGalleryCard(moreCard.hits);
   markupCards = imagesApi.getReadyMarkup();
   refs.gallery.insertAdjacentHTML('beforeend', markupCards);
-  allContentLoaded(moreCard);
   lightbox.refresh();
+  allContentLoaded(moreCard);
+ 
   // showTotalHits(moreCard);
   } catch (error) {
     console.log(error);
