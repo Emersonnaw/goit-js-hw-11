@@ -39,21 +39,19 @@ export default class ImageServiceAPI {
    return object.data;
   }
 
-//  async publicReadyCards (){
-//  const fetchResolt = await this.fetchImage();
-//  return this.makeGalleryCard(fetchResolt);
 
-  
-// }
 
 
 
  makeGalleryCard(renderObject){
    // {webformatURL,largeImageURL ,tags, likes, views, comments, downloads}
-   return this.markup = renderObject.map(({webformatURL, tags, likes, views, comments, downloads}) => {
+   return this.markup = renderObject.map(({webformatURL,largeImageURL ,tags, likes, views, comments, downloads}) => {
      return   `<div class="photo-card">  
-     <div class="thumb">
-     <img class="img__card" src="${webformatURL}" alt="${tags}" loading="lazy" />
+     <div class="thumb"> 
+      
+          <a href="${largeImageURL}">
+          <img class="img__card" src="${webformatURL}" alt="${tags}" loading="lazy" />
+          </a>
      </div>                           
         <div class="info">
           <p class="info-item">

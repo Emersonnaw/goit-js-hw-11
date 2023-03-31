@@ -2,22 +2,27 @@
 import './common/style.css';
 import ImageServiceAPI from './components/imageService';
 import Notiflix from 'notiflix';
-
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 import axios from 'axios';
+var lightbox = new SimpleLightbox('.thumb a', {captionsData:'alt',captionDelay:250});
+var throttle = require('lodash.throttle');
+ 
 const imagesApi = new ImageServiceAPI(); //import Class
 let markupCards = '';
 let oldvalue = ' ';
 const refs = {
   searchForm: document.querySelector('#search-form'), // link form
   gallery: document.querySelector('.gallery'),
-  buttonLoadMore: document.querySelector('.load-more'),
+//  buttonLoadMore: document.querySelector('.load-more'),
 };
+
 
 refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
 
 function handleSubmit(e) {
   e.preventDefault(); //cancel reload page
-  removeButtonLeadMore();
+  // removeButtonLeadMore();
   const submitValue = e.currentTarget.elements.searchQuery.value;
   protectEmptyInput(submitValue);
 
@@ -36,15 +41,47 @@ function handleSubmit(e) {
   dataWithServer();
 }
 
+// refs.buttonLoadMore.addEventListener('click', onLoadMore);
 
-refs.buttonLoadMore.addEventListener('click', onLoadMore);
+// function onLoadMore(e) {
+//   removeButtonLeadMore();
+//   imagesApi.incrementPage();
 
-function onLoadMore(e) {
-  removeButtonLeadMore();
-  imagesApi.incrementPage();
+//   showMoreCards();
+//   ;
+// }
 
-  showMoreCards();
+;(() => {
+  window.addEventListener('scroll', throttle(checkPosition,250))
+  window.addEventListener('resize', throttle(checkPosition,250))
+})()
+
+
+
+
+ 
+async function checkPosition(){
+  const height = document.body.offsetHeight; //height document
+  const screenHeight = window.innerHeight; // height screen
+ 
+  const scrolled = window.scrollY; //pixel scrolled 
+ 
+  const threshold = height - screenHeight / 5;  // trigger point
+   const position = scrolled + screenHeight; // watch whete the bottom of the screen
+  if (position >= threshold) { // event and action
+    imagesApi.incrementPage();
+     await showMoreCards();
+   
+  }
 }
+
+
+
+
+
+
+
+
 
 
 async function dataWithServer() {
@@ -66,7 +103,8 @@ async function dataWithServer() {
     imagesApi.makeGalleryCard(objectFromServer.hits);
     markupCards = imagesApi.getReadyMarkup();
     refs.gallery.insertAdjacentHTML('beforeend', markupCards); // render cards
-    addButtonLeadMore(); //show buttom More  
+    lightbox.refresh();
+    // addButtonLeadMore(); //show buttom More  
     
   } catch (error) {
     console.log(error);
@@ -77,12 +115,13 @@ async function dataWithServer() {
 async function showMoreCards(){
   try {
     const moreCard = await imagesApi.fetchImage();
-  addButtonLeadMore();
+  // addButtonLeadMore();
   imagesApi.makeGalleryCard(moreCard.hits);
   markupCards = imagesApi.getReadyMarkup();
   refs.gallery.insertAdjacentHTML('beforeend', markupCards);
   allContentLoaded(moreCard);
-  showTotalHits(moreCard);
+  lightbox.refresh();
+  // showTotalHits(moreCard);
   } catch (error) {
     console.log(error);
   }
@@ -104,13 +143,13 @@ function galleryAbortContainer() {
   refs.gallery.innerHTML = '';
 }
 
-function addButtonLeadMore() {
-  refs.buttonLoadMore.classList.remove('visually-hidden');
-}
+// function addButtonLeadMore() {
+//   refs.buttonLoadMore.classList.remove('visually-hidden');
+// }
 
-function removeButtonLeadMore() {
-  refs.buttonLoadMore.classList.add('visually-hidden');
-}
+// function removeButtonLeadMore() {
+//   refs.buttonLoadMore.classList.add('visually-hidden');
+// }
 
 function allContentLoaded(allHits) {
   let cardCounter = document.querySelectorAll('.photo-card').length;
