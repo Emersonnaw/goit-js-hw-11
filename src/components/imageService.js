@@ -34,7 +34,7 @@ export default class ImageServiceAPI {
     const ageFilter = '&safesearch="true"';
     const perPage ='&per_page=40';
     const page = `&page=${this.page}`;
- 
+  
    const object =  await axios.get(`${BASE_URL}?key=${key}&q=${this.search_query}${searchTypePhoto}${searchOrientation}${ageFilter}${perPage}${page}`);
    return object.data;
   }

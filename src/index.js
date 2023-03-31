@@ -18,6 +18,9 @@ const refs = {
 };
 
 
+
+
+
 refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
 
  async function handleSubmit(e) {
@@ -47,6 +50,9 @@ refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
   imagesApi.resetPage(); //reset number of find page
   imagesApi.query = submitValue; //write value search
  await dataWithServer();
+
+ 
+
 }
 
 // refs.buttonLoadMore.addEventListener('click', onLoadMore);
@@ -97,6 +103,7 @@ async function dataWithServer() {
     }
     showTotalHits(objectFromServer);
     galleryAbortContainer();
+    imagesApi.resetPage();
     imagesApi.makeGalleryCard(objectFromServer.hits);
     markupCards = imagesApi.getReadyMarkup();
     refs.gallery.insertAdjacentHTML('beforeend', markupCards); // render cards
@@ -153,13 +160,15 @@ function galleryAbortContainer() {
 function allContentLoaded(allHits) {
   let cardCounter = document.querySelectorAll('.photo-card').length;
   if (cardCounter >= allHits.totalHits) {
+
     Notiflix.Notify.failure(
       "We're sorry, but you've reached the end of search results.",
       {
         timeout: 6000,
       }
     );
-    removeButtonLeadMore();
+    t
+    // removeButtonLeadMore();
   }
 }
 
