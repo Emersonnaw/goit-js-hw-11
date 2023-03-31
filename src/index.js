@@ -1,4 +1,4 @@
-// infinite-scroll.com
+
 import './common/style.css';
 import ImageServiceAPI from './components/imageService';
 import Notiflix from 'notiflix';
@@ -20,11 +20,19 @@ const refs = {
 
 refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
 
-function handleSubmit(e) {
+ async function handleSubmit(e) {
   e.preventDefault(); //cancel reload page
   // removeButtonLeadMore();
-  const submitValue = e.currentTarget.elements.searchQuery.value;
-  protectEmptyInput(submitValue);
+  let submitValue = e.currentTarget.elements.searchQuery.value;
+  
+  if (!submitValue) {
+    //protect against non-entered data
+    Notiflix.Notify.failure('input Something please', {
+      timeout: 6000,
+    });
+    return;
+  }
+  
 
   if (oldvalue === submitValue) {    //protect against the  same request
     
@@ -38,7 +46,7 @@ function handleSubmit(e) {
 
   imagesApi.resetPage(); //reset number of find page
   imagesApi.query = submitValue; //write value search
-  dataWithServer();
+ await dataWithServer();
 }
 
 // refs.buttonLoadMore.addEventListener('click', onLoadMore);
@@ -57,9 +65,6 @@ function handleSubmit(e) {
 })()
 
 
-
-
- 
 async function checkPosition(){
   const height = document.body.offsetHeight; //height document
   const screenHeight = window.innerHeight; // height screen
@@ -74,14 +79,6 @@ async function checkPosition(){
    
   }
 }
-
-
-
-
-
-
-
-
 
 
 async function dataWithServer() {
@@ -137,6 +134,7 @@ function protectEmptyInput(valSabmit) {
     });
     return;
   }
+  
 }
 
 function galleryAbortContainer() {
