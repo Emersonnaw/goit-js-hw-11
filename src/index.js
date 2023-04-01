@@ -11,6 +11,7 @@ var throttle = require('lodash.throttle');
 const imagesApi = new ImageServiceAPI(); //import Class
 let markupCards = '';
 let oldvalue = ' ';
+let allowDownloadMore = false;
 const refs = {
   searchForm: document.querySelector('#search-form'), // link form
   gallery: document.querySelector('.gallery'),
@@ -26,7 +27,7 @@ refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
  async function handleSubmit(e) {
   e.preventDefault(); //cancel reload page
   // removeButtonLeadMore();
-  let submitValue = e.currentTarget.elements.searchQuery.value;
+ const submitValue = e.currentTarget.elements.searchQuery.value;
   
   if (!submitValue) {
     //protect against non-entered data
@@ -49,7 +50,8 @@ refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
 
   imagesApi.resetPage(); //reset number of find page
   imagesApi.query = submitValue; //write value search
- await dataWithServer();
+  dataWithServer();
+  allowDownloadMore = true;
 
  
 
@@ -79,9 +81,9 @@ async function checkPosition(){
  
   const threshold = height - screenHeight / 5;  // trigger point
    const position = scrolled + screenHeight; // watch whete the bottom of the screen
-  if (position >= threshold) { // event and action
+  if (position >= threshold && allowDownloadMore) { // event and action
     imagesApi.incrementPage();
-     await showMoreCards();
+    await showMoreCards();
    
   }
 }
@@ -92,6 +94,7 @@ async function dataWithServer() {
     const objectFromServer = await imagesApi.fetchImage();
   
     if (!objectFromServer.hits.length) {
+      refs.gallery.innerHTML = '';
       Notiflix.Notify.failure(
         // send non blocking alert
         'Sorry, there are no images matching your search query. Please try again.',
@@ -134,16 +137,16 @@ async function showMoreCards(){
 }
 
 
-function protectEmptyInput(valSabmit) {
-  if (!valSabmit) {
-    //protect against non-entered data
-    Notiflix.Notify.failure('input Something please', {
-      timeout: 6000,
-    });
-    return;
-  }
+// function protectEmptyInput(valSabmit) {
+//   if (!valSabmit) {
+//     //protect against non-entered data
+//     Notiflix.Notify.failure('input Something please', {
+//       timeout: 6000,
+//     });
+//     return;
+//   }
   
-}
+// }
 
 function galleryAbortContainer() {
   refs.gallery.innerHTML = '';
