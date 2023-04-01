@@ -12,6 +12,7 @@ const imagesApi = new ImageServiceAPI(); //import Class
 let markupCards = '';
 let oldvalue = ' ';
 let allowDownloadMore = null; // flag on protect
+let allHitsThisColection  = null;
 const refs = {
   searchForm: document.querySelector('#search-form'), // link form
   gallery: document.querySelector('.gallery'),
@@ -37,7 +38,6 @@ refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
     return;
   }
   
-
   if (oldvalue === submitValue) {    //protect against the  same request
     
     Notiflix.Notify.info('Change the query value please', {
@@ -52,7 +52,7 @@ refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
   imagesApi.query = submitValue; //write value search
   dataWithServer();
   allowDownloadMore = true;
-
+ 
  
 
 }
@@ -84,7 +84,7 @@ async function checkPosition(){
   if (position >= threshold && allowDownloadMore) { // event and action
     imagesApi.incrementPage();
     await showMoreCards();
-   
+    allContentLoaded(allHitsThisColection);
   }
 }
 
@@ -104,6 +104,8 @@ async function dataWithServer() {
       );
       return;
     }
+    allHitsThisColection  = objectFromServer.totalHits;
+    console.log('allHitsThisColection', allHitsThisColection);
     showTotalHits(objectFromServer);
     galleryAbortContainer();
     imagesApi.resetPage();
@@ -122,18 +124,34 @@ async function dataWithServer() {
 async function showMoreCards(){
   try {
     const moreCard = await imagesApi.fetchImage();
-  // addButtonLeadMore();
+  const allHitsThisColection  = moreCard.totalHits;
   imagesApi.makeGalleryCard(moreCard.hits);
   markupCards = imagesApi.getReadyMarkup();
   refs.gallery.insertAdjacentHTML('beforeend', markupCards);
   lightbox.refresh();
-  allContentLoaded(moreCard);
+  // allContentLoaded(); // 1
  
   // showTotalHits(moreCard);
   } catch (error) {
     console.log(error);
   }
   
+}
+
+
+function allContentLoaded(allHits) {
+  let cardCounter = document.querySelectorAll('.photo-card').length;
+  if (cardCounter >= allHits) {
+
+    Notiflix.Notify.failure(
+      "We're sorry, but you've reached the end of search results.",
+      {
+        timeout: 6000,
+      }
+    );
+    
+    // removeButtonLeadMore();
+  }
 }
 
 
@@ -160,20 +178,7 @@ function galleryAbortContainer() {
 //   refs.buttonLoadMore.classList.add('visually-hidden');
 // }
 
-function allContentLoaded(allHits) {
-  let cardCounter = document.querySelectorAll('.photo-card').length;
-  if (cardCounter >= allHits.totalHits) {
 
-    Notiflix.Notify.failure(
-      "We're sorry, but you've reached the end of search results.",
-      {
-        timeout: 6000,
-      }
-    );
-    t
-    // removeButtonLeadMore();
-  }
-}
 
 function showTotalHits(hits) {
   Notiflix.Notify.success(`Hooray! We found ${hits.totalHits} images.`, {
