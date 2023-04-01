@@ -11,7 +11,7 @@ var throttle = require('lodash.throttle');
 const imagesApi = new ImageServiceAPI(); //import Class
 let markupCards = '';
 let oldvalue = ' ';
-let allowDownloadMore = false;
+let allowDownloadMore = null; // flag on protect
 const refs = {
   searchForm: document.querySelector('#search-form'), // link form
   gallery: document.querySelector('.gallery'),
@@ -28,7 +28,7 @@ refs.searchForm.addEventListener('submit', handleSubmit); // catch value Submit
   e.preventDefault(); //cancel reload page
   // removeButtonLeadMore();
  const submitValue = e.currentTarget.elements.searchQuery.value;
-  
+  allowDownloadMore = false;
   if (!submitValue) {
     //protect against non-entered data
     Notiflix.Notify.failure('input Something please', {
